@@ -1,79 +1,36 @@
-import re
-from typing import List, Dict, Any, TYPE_CHECKING
+from typing import List, Dict, TYPE_CHECKING
 
 from ripgrepy import Ripgrepy
 
-from . import exceptions, configs, io
+from . import configs, io
 
 if TYPE_CHECKING:
     from zetools.core import MarkdownFile
 
-_page_template: str = '''# Zettelkasten - Advanced Search
-
-## Search Criteria
-
-{search_criteria}
-        
----
-
-## Search Results
-{results_section}
+_results_table_header = '''|Latest search matched {num_results} file(s):|
+|---|
 '''
-_blank_search_section = '''    includes-anywhere: []
-    includes-in-title: []
-    excludes-everywhere: []
-    excludes-in-title: []
-
-    - Use // to comment out groups, e.g:
-        // includes-anywhere: [ignore me]
-'''
-_results_section = '''{search_status}
-
-{results_list}'''
-_search_status = '''Matched {num_files} file(s)'''
-_result_template = '''- [{title}]({filepath})\n'''
-
-_rgx = re.compile('(?<=\[).*?(?=\])')  # noqa - Square bracket extraction regex.
+_result_template = '''|[{title}]({filepath})|\n'''
 
 
-class TermsNotFoundError(exceptions.ZetoolsException):
-    """Indicates a search term block was not found in the md file."""
+def _process_raw_search_terms(raw_search_terms: Dict[str, str]) -> Dict[str, List[str]]:
+    search_terms = {}
+    for key, value in raw_search_terms.items():
+        terms = value.split(',')
+        search_terms[key] = []
+        for term in terms:
+            if not term.strip() == '':
+                search_terms[key].append(term.strip().lower())
+
+    return search_terms
 
 
-def _format_results(results: List['MarkdownFile']) -> str:
+def _generate_results_section(results: List['MarkdownFile']) -> str:
     """Builds the results section of the page."""
-    results_list = ''
+    results_section = _results_table_header.format(num_results=len(results))
     for result in results:
-        results_list = results_list + _result_template.format(title=result.title, filepath=result.rel_filepath)
-    return _results_section.format(search_status=_search_status.format(num_files=len(results)),
-                                   results_list=results_list)
-
-
-def _parse_terms(tag: str, file_lines: List[str]) -> Any:
-    """Parses the terms from the specified tag."""
-    # Compile regex to extract text from between square brackets;
-
-    # Hunt through the lines until you find the file.
-    for line in file_lines:
-        if tag in line and '//' not in line and r'\\' not in line:  # Allows tags to be commented out.
-            raw_terms = _rgx.findall(line)[0]
-            terms = []
-            for term in raw_terms.split(','):
-                term = term.strip()
-                if not term == '':
-                    terms.append(term.lower())
-            return terms
-    raise TermsNotFoundError
-
-
-def _parse_all_search_terms(file_lines: List[str]) -> Dict[str, Any]:
-    """Parses the search page lines into a dictionary of all search terms."""
-    return {
-        'includes-anywhere': _parse_terms('includes-anywhere', file_lines),
-        'includes-in-title': _parse_terms('includes-in-title', file_lines),
-        'excludes-everywhere': _parse_terms('excludes-everywhere', file_lines),
-        'excludes-in-title': _parse_terms('excludes-in-title', file_lines),
-    }
+        results_section = results_section + _result_template.format(title=result.title, filepath=result.rel_filepath)
+    return results_section
 
 
 def _get_rg(search_term: str, prev_result_paths: List[str]) -> 'Ripgrepy':
@@ -105,26 +62,27 @@ def _filter_on_excludes_everywhere(search_term: str, prev_result_paths: List[str
     return filenames
 
 
-def run_search() -> None:
+def run_search(raw_search_terms: Dict[str, str]) -> None:
     """Runs the search, based on the criteria in the search page."""
     result_paths = []
-    search_page = io.read_md(r'{vault_path}\{search_page_name}'.format(
+    main_page = io.read_md(r'{vault_path}\{main_page_name}'.format(
         vault_path=configs.vault_filepath,
-        search_page_name=configs.search_page_filename
+        main_page_name=configs.main_page_filename
     ))
-    # Grab the search terms;
-    search_terms = _parse_all_search_terms(search_page.content_lines)
+    # Process the search terms;
+    search_terms = _process_raw_search_terms(raw_search_terms)
 
     # Filter on any 'includes-anywhere';
-    search_terms['includes-anywhere'] = set(search_terms['includes-anywhere'] + search_terms['includes-in-title'])
-    if len(search_terms['includes-anywhere']) > 0:
-        for term in search_terms['includes-anywhere']:
+    search_terms['includes_anywhere'] = list(set(search_terms['includes_anywhere'] + search_terms['includes_in_title']))
+    if len(search_terms['includes_anywhere']) > 0:
+        for term in search_terms['includes_anywhere']:
             result_paths = _filter_on_includes_anywhere(term, result_paths)
 
     # Filter on 'excludes-everywhere'
-    search_terms['excludes-everywhere'] = set(search_terms['excludes-everywhere'] + search_terms['excludes-in-title'])
-    if len(search_terms['excludes-everywhere']) > 0:
-        for term in search_terms['excludes-everywhere']:
+    search_terms['excludes_everywhere'] = list(
+        set(search_terms['excludes_everywhere'] + search_terms['excludes_in_title']))
+    if len(search_terms['excludes_everywhere']) > 0:
+        for term in search_terms['excludes_everywhere']:
             result_paths = _filter_on_excludes_everywhere(term, result_paths)
 
     # Now read the files in, we need to inspect their titles;
@@ -136,13 +94,13 @@ def run_search() -> None:
     matches = []  # final matches
     for file in files:
         title_words = file.title.lower().split()
-        if any(x in search_terms['excludes-in-title'] for x in title_words):
+        if any(x in search_terms['excludes_in_title'] for x in title_words):
             continue
-        if len(search_terms['includes-in-title']) > 0 and \
-                not any(x in search_terms['includes-in-title'] for x in title_words):
+        if len(search_terms['includes_in_title']) > 0 and \
+                not any(x in search_terms['includes_in_title'] for x in title_words):
             continue
         matches.append(file)
 
     # Now update and write the search page;
-    search_page.set_section(1, 'Search Results', _format_results(matches))
-    io.write_md(search_page)
+    main_page.set_section(1, 'Search Results', _generate_results_section(matches))
+    io.write_md(main_page)

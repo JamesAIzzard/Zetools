@@ -1,4 +1,5 @@
 import tkinter as tk
+import zetools
 
 # Define colour scheme;
 col_dark = "#022c43"
@@ -46,7 +47,7 @@ def handle_search():
         'excludes_everywhere': ent_excludes_everywhere.get(),
         'excludes_in_title': ent_excludes_in_title.get()
     }
-    print(terms)
+    zetools.run_search(terms)
 
 
 btn_search = tk.Button(master=lbf_search_criteria, text="Search", fg="white", bg=col_light, bd=0, padx=10,
