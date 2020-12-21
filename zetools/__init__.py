@@ -1,3 +1,3 @@
-from zetools.search import run_search
-
+from .search import run_search
+from . import configs
 

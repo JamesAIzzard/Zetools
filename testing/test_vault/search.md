@@ -3,9 +3,9 @@
 ## Search Criteria
 
     // includes-anywhere: [ignore me]
-    includes-anywhere: [main]
-    includes-in-title: [zettelkasten]
-    excludes-everywhere: [main]
+    includes-anywhere: [#task, #incomplete]
+    includes-in-title: []
+    excludes-everywhere: []
     excludes-in-title: []
     - Use commas to seperate individual terms.
     - Use // or \\ to comment out groups, e.g:
@@ -14,5 +14,8 @@
 ---
 
 ## Search Results
-Matched 0 file(s)
+Matched 3 file(s)
 
+- [Zettelkasten - Tagging Guidelines](20201211062906.md)
+- [Organise Replacement Pallet Preload Bar](20201214091158.md)
+- [Zettelkasten - Advanced Search](search.md)
