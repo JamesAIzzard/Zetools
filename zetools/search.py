@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 _results_table_header = '''|Latest search matched {num_results} file(s):|
 |---|
 '''
-_result_template = '''|[{title}]({filepath})|\n'''
+_result_template = '''|[{title}](files\\{filepath})|\n'''
 
 
 def _process_raw_search_terms(raw_search_terms: Dict[str, str]) -> Dict[str, List[str]]:
@@ -65,24 +65,21 @@ def _filter_on_excludes_everywhere(search_term: str, prev_result_paths: List[str
 def run_search(raw_search_terms: Dict[str, str]) -> None:
     """Runs the search, based on the criteria in the search page."""
     result_paths = []
-    main_page = io.read_md(r'{vault_path}\{main_page_name}'.format(
-        vault_path=configs.vault_filepath,
-        main_page_name=configs.main_page_filename
-    ))
+    main_page = io.read_md(r'{}'.format(configs.main_page_filepath))
     # Process the search terms;
     search_terms = _process_raw_search_terms(raw_search_terms)
 
     # Filter on any 'includes-anywhere';
-    search_terms['includes_anywhere'] = list(set(search_terms['includes_anywhere'] + search_terms['includes_in_title']))
-    if len(search_terms['includes_anywhere']) > 0:
-        for term in search_terms['includes_anywhere']:
+    search_terms['inc_all'] = list(set(search_terms['inc_all'] + search_terms['inc_title']))
+    if len(search_terms['inc_all']) > 0:
+        for term in search_terms['inc_all']:
             result_paths = _filter_on_includes_anywhere(term, result_paths)
 
     # Filter on 'excludes-everywhere'
-    search_terms['excludes_everywhere'] = list(
-        set(search_terms['excludes_everywhere'] + search_terms['excludes_in_title']))
-    if len(search_terms['excludes_everywhere']) > 0:
-        for term in search_terms['excludes_everywhere']:
+    search_terms['ex_all'] = list(
+        set(search_terms['ex_all'] + search_terms['ex_title']))
+    if len(search_terms['ex_all']) > 0:
+        for term in search_terms['ex_all']:
             result_paths = _filter_on_excludes_everywhere(term, result_paths)
 
     # Now read the files in, we need to inspect their titles;
@@ -94,10 +91,10 @@ def run_search(raw_search_terms: Dict[str, str]) -> None:
     matches = []  # final matches
     for file in files:
         title_words = file.title.lower().split()
-        if any(x in search_terms['excludes_in_title'] for x in title_words):
+        if any(x in search_terms['ex_title'] for x in title_words):
             continue
-        if len(search_terms['includes_in_title']) > 0 and \
-                not any(x in search_terms['includes_in_title'] for x in title_words):
+        if len(search_terms['inc_title']) > 0 and \
+                not any(x in search_terms['inc_title'] for x in title_words):
             continue
         matches.append(file)
 
