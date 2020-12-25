@@ -1,34 +1,28 @@
 import tkinter as tk
 
-import zetools
 
-
-class LabelledEntry:
+class LabelledEntry(tk.Frame):
     """Labelled entry box."""
 
-    def __init__(self, master, label_text: str, entry_char_width: int):
-        self.frame = tk.Frame(master=master, bg=zetools.gui.configs.background_colour)
-        self.label = tk.Label(master=self.frame, text=label_text,
-                              width=21, height=1, anchor="w",
-                              bg=zetools.gui.configs.background_colour,
-                              fg=zetools.gui.configs.std_text_colour,
-                              font=(zetools.gui.configs.std_font, zetools.gui.configs.std_font_size))
-        self.entry = tk.Entry(master=self.frame, width=entry_char_width,
-                              bg=zetools.gui.configs.entry_background_colour,
-                              fg=zetools.gui.configs.emph_text_colour,
-                              font=(zetools.gui.configs.std_font, zetools.gui.configs.std_font_size),
-                              relief=tk.FLAT)
-        self.label.grid(column=0, row=0)
-        self.entry.grid(column=1, row=0)
+    def __init__(self, master, label_kwargs, entry_kwargs):
+        super().__init__(master=master)
+        if 'bg' in label_kwargs:
+            self.configure(bg=label_kwargs['bg'])
+        elif 'background_colour' in label_kwargs:
+            self.configure(bg=label_kwargs['background_colour'])
+        self._label = tk.Label(master=self, **label_kwargs)
+        self._label.grid(row=0, column=0)
+        self._entry = tk.Entry(master=self, **entry_kwargs)
+        self._entry.grid(row=0, column=1)
 
     def get(self) -> str:
-        return self.entry.get()
+        return self._entry.get()
 
-    def delete(self, **kwargs) -> None:
-        self.entry.delete(**kwargs)
+    def clear(self) -> None:
+        self._entry.delete(0, tk.END)
 
-    def pack(self, **kwargs) -> None:
-        self.frame.pack(**kwargs)
+    def configure_label(self, **kwargs):
+        self._label.configure(**kwargs)
 
-    def grid(self, **kwargs) -> None:
-        self.frame.grid(**kwargs)
+    def configure_entry(self, **kwargs):
+        self._entry.configure(**kwargs)

@@ -1,1 +1,3 @@
-from zetools.gui import main
+from zetools.gui.main import run
+
+run()
