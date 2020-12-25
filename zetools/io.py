@@ -1,9 +1,9 @@
 from typing import List, Optional, TYPE_CHECKING
 
-from zetools import core
+from zetools import markdown_file
 
 if TYPE_CHECKING:
-    from zetools.core import MarkdownFile
+    from zetools.markdown_file import MarkdownFile
 
 
 def read_md(filepath: str) -> 'MarkdownFile':
@@ -12,7 +12,7 @@ def read_md(filepath: str) -> 'MarkdownFile':
         filepath (str): Filepath of markdown file, including .md extension.
     """
     with open(filepath, 'r') as fh:
-        return core.MarkdownFile(fh.readlines(), filepath)
+        return markdown_file.MarkdownFile(fh.readlines(), filepath)
 
 
 def write_md(markdown_file: 'MarkdownFile') -> None:
@@ -23,9 +23,9 @@ def write_md(markdown_file: 'MarkdownFile') -> None:
 
 
 def get_md_title(filename: Optional[str] = None, lines: Optional[List[str]] = None) -> str:
-    """Returns the title of the markdown file. This is the first line of the file, without the # symbol.
+    """Returns the section_title of the markdown file. This is the first line of the file, without the # symbol.
     Args:
-        filename(str): Filename (without extension) to read and extract title from.
+        filename(str): Filename (without extension) to read and extract section_title from.
         lines(List[str]): File contents as a list of lines.
     """
     if filename is not None:

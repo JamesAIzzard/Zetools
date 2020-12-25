@@ -1,3 +1,4 @@
-from zetools.gui.main import run
+from zetools import App
 
-run()
+app = App()
+app.run()

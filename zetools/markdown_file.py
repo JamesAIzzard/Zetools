@@ -2,9 +2,8 @@ from typing import List
 
 from . import configs
 
-
 class MarkdownFile:
-    """Class to encapsulate and extend a markdown file."""
+    """Represents and manipulates a markdown file."""
 
     def __init__(self, content_lines: List[str], filepath: str):
         self.filepath = filepath
@@ -12,19 +11,23 @@ class MarkdownFile:
 
     @property
     def title(self) -> str:
+        """Gets the section_title of the markdown file."""
         return self.content_lines[0][1:].strip()
 
     @property
     def content(self) -> str:
+        """Gets the content of a markdown file as a single string."""
         return ''.join(self.content_lines)
 
     @property
     def rel_filepath(self) -> str:
+        """Returns the filepath of the markdown file, relative to the the vault."""
         return self.filepath.replace(configs.vault_filepath + '\\', '')
 
-    def set_section(self, level: int, title: str, content: str) -> None:
+    def set_section(self, level: int, section_title: str, content: str) -> None:
+        """Sets the content of a section in the file."""
         hash_delimiter = '#' * (level + 1)
-        header = hash_delimiter + ' {}\n'.format(title)
+        header = hash_delimiter + ' {}\n'.format(section_title)
         firstline, lastline = None, None
         # Find the first line of the section content;
         for i, line in enumerate(self.content_lines):
