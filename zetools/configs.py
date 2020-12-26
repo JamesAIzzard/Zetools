@@ -3,6 +3,7 @@ main_page_filepath = r'C:\Users\james.izzard\Dropbox\zettelkasten\zettelkasten.m
 ico_filepath = r'zetools/assets/brain_icon.ico'
 brain_image_path = r'zetools/assets/brain.png'
 expand_button_image_path = r'zetools/assets/expand_button.png'
+result_title_max_chars = 55
 
 background_colour = "#111111"
 entry_background_colour = "#222222"
