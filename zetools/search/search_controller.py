@@ -11,8 +11,9 @@ class SearchController:
         self._view = search_view
         self._view.bind('<<Search>>', self._on_search)
 
-    def _on_search(self, _) -> None:
+    def _on_search(self, event) -> None:
         """Handler for search event."""
+        print(event.widget.get())
         results = search.search(self._view.get())
         results_page = io.read_md(configs.main_page_filepath)
         search.insert_markdown_results_section(results, results_page)

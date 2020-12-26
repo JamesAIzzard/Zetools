@@ -63,8 +63,12 @@ class SearchView(tk.Frame):
         self._excludes_in_title_entry.pack()
         self._show_results_button = images.ImageButton(master=self, image_path=configs.expand_button_image_path,
                                                        img_width=20, bg=configs.button_colour)
-        self._show_results_button.grid(row=3, column=1, columnspan=3, pady=15)
-        self._search_results = tk.Frame(master=self)
+        self._show_results_button.grid(row=3, column=0, columnspan=3, pady=15)
+        self._results_view = zetools.ScrollFrame(master=self)
+        for i in range(30):
+            lbl = tk.Label(master=self._results_view.scrollable_frame, text="I am number {}".format(i), width=50)
+            lbl.pack()
+        self._results_view.grid(row=4, column=0, columnspan=3)
 
     def _place_advanced_fields(self) -> None:
         """Adds the advanced field entries to the grid."""
