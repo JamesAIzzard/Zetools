@@ -2,9 +2,12 @@ import tkinter as tk
 
 
 class ScrollFrame(tk.Frame):
-    def __init__(self, master, *args, **kwargs):
-        super().__init__(master, *args, **kwargs)
-        canvas = tk.Canvas(self)
+    def __init__(self, master, width:int, height:int, **kwargs):
+        super().__init__(master, **kwargs)
+        canvas = tk.Canvas(self, width=width, height=height)
+        if 'bg' in kwargs:
+            canvas.configure(bg=kwargs['bg'])
+        canvas.configure(relief=tk.FLAT)
         scrollbar = tk.Scrollbar(self, orient="vertical", command=canvas.yview)
         self.scrollable_frame = tk.Frame(canvas)
 

@@ -2,7 +2,7 @@ import tkinter as tk
 from typing import List, TYPE_CHECKING
 
 import zetools
-from zetools import configs, search, images
+from zetools import configs, search
 
 if TYPE_CHECKING:
     from zetools.search import SearchDef
@@ -45,7 +45,7 @@ class SearchView(tk.Frame):
         }
         self._includes_in_title_entry = zetools.LabelledEntry(
             master=self._advanced_fields,
-            label_kwargs=dict(**label_kwargs, text="includes in section:"),
+            label_kwargs=dict(**label_kwargs, text="includes in title:"),
             entry_kwargs=entry_kwargs
         )
         self._includes_in_title_entry.pack()
@@ -57,18 +57,19 @@ class SearchView(tk.Frame):
         self._excludes_everywhere_entry.pack()
         self._excludes_in_title_entry = zetools.LabelledEntry(
             master=self._advanced_fields,
-            label_kwargs=dict(**label_kwargs, text="excludes in section"),
+            label_kwargs=dict(**label_kwargs, text="excludes in title:"),
             entry_kwargs=entry_kwargs
         )
         self._excludes_in_title_entry.pack()
-        self._show_results_button = images.ImageButton(master=self, image_path=configs.expand_button_image_path,
-                                                       img_width=20, bg=configs.button_colour)
-        self._show_results_button.grid(row=3, column=0, columnspan=3, pady=15)
-        self._results_view = zetools.ScrollFrame(master=self)
-        for i in range(30):
-            lbl = tk.Label(master=self._results_view.scrollable_frame, text="I am number {}".format(i), width=50)
-            lbl.pack()
-        self._results_view.grid(row=4, column=0, columnspan=3)
+        # self._show_results_button = images.ImageButton(master=self, image_path=configs.expand_button_image_path,
+        #                                                img_width=20, bg=configs.button_colour)
+        # self._show_results_button.grid(row=3, column=0, columnspan=3, pady=15)
+        self._results_view = search.SearchResultsView(master=self, width=700, height=300)
+        # self._results_view = zetools.ScrollFrame(master=self)
+        # for i in range(30):
+        #     lbl = tk.Label(master=self._results_view.scrollable_frame, text="I am number {}".format(i), width=50)
+        #     lbl.pack()
+        self._results_view.grid(row=3, column=0, columnspan=3, pady=20)
 
     def _place_advanced_fields(self) -> None:
         """Adds the advanced field entries to the grid."""
@@ -91,7 +92,14 @@ class SearchView(tk.Frame):
         self._excludes_in_title_entry.clear()
 
     def display_results(self, results: List['MarkdownFile']) -> None:
-        print(results)
+        """Populates the results view with a list of markdown files."""
+        self.clear_results()
+        for result in results:
+            self._results_view.add_result(result)
+
+    def clear_results(self) -> None:
+        """Removes all results from the results view."""
+        self._results_view.clear_results()
 
     def get(self) -> 'SearchDef':
         """Collects input from fields and returns the search def object."""
