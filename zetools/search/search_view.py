@@ -5,16 +5,15 @@ import zetools
 from zetools import configs, search, images
 
 if TYPE_CHECKING:
-    from zetools.search import SearchController, SearchDef
+    from zetools.search import SearchDef
     from zetools import MarkdownFile
 
 
 class SearchView(tk.Frame):
     """Search input widget."""
 
-    def __init__(self, master, controller: 'SearchController'):
+    def __init__(self, master):
         super().__init__(master=master, bg=configs.background_colour)
-        self._controller = controller
         self._advanced_fields_visible = False
         self._toggle_advanced_button = tk.Button(master=self, text='...', bg=configs.button_colour,
                                                  font=(configs.std_font, 10),
@@ -27,7 +26,7 @@ class SearchView(tk.Frame):
         self._search_entry.grid(row=0, column=1)
         self._search_button = tk.Button(master=self, text='Search', width=25, bg=configs.button_colour,
                                         font=(configs.std_font, configs.std_font_size),
-                                        command=lambda: self._controller.on_search(search_definition=self.get()))
+                                        command=lambda: self.event_generate('<<Search>>'))
         self._search_button.grid(row=0, column=2)
         self._advanced_fields = tk.Frame(master=self)
         label_kwargs = {
@@ -87,13 +86,8 @@ class SearchView(tk.Frame):
         self._excludes_everywhere_entry.clear()
         self._excludes_in_title_entry.clear()
 
-    def _on_search(self) -> None:
-        """Handler for when the search button is pressed."""
-        results = self._controller.on_search(self.get())
-        self.display_results(results)
-
     def display_results(self, results: List['MarkdownFile']) -> None:
-        pass
+        print(results)
 
     def get(self) -> 'SearchDef':
         """Collects input from fields and returns the search def object."""

@@ -17,7 +17,8 @@ class App:
         # Build the components;
         self._main_logo = zetools.ImageLabel(master=self._window, image_path=configs.brain_image_path, img_width=300,
                                              bg=zetools.configs.background_colour)
-        self._search_view = search.SearchView(master=self._window, controller=search.SearchController())
+        self._search_view = search.SearchView(master=self._window)
+        self._search_controller = search.SearchController(search_view=self._search_view)
         # Assemble the UI;
         self._window.grid_columnconfigure(0, weight=1)
         self._main_logo.grid(row=0, column=0)
