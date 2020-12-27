@@ -20,13 +20,15 @@ class SearchResult(tk.Frame):
                                        anchor=tk.W,
                                        font=(configs.std_font, configs.std_font_size),
                                        bg=configs.background_colour,
-                                       fg=configs.std_text_colour)
+                                       fg=configs.std_text_colour,
+                                       cursor="hand2")
         self._title_display.bind("<Button-1>", self._on_title_click)
         self._title_display.grid(row=0, column=0)
         self._filename_display = tk.Label(master=self, text=self._markdown_file.rel_filepath, width=17, anchor=tk.E,
                                           font=(configs.std_font, configs.std_font_size),
                                           bg=configs.background_colour,
-                                          fg=configs.emph_text_colour)
+                                          fg=configs.emph_text_colour,
+                                          cursor="hand2")
         self._filename_display.bind("<Button-1>", self._on_filename_click)
         self._filename_display.grid(row=0, column=1)
 

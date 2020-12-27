@@ -18,7 +18,7 @@ class SearchView(tk.Frame):
         self._toggle_advanced_button = tk.Button(master=self, text='...', bg=configs.button_colour,
                                                  font=(configs.std_font, 10),
                                                  command=self._toggle_advanced_fields,
-                                                 cursor="hand1")
+                                                 cursor="hand2")
         self._toggle_advanced_button.grid(row=0, column=0)
         self._search_entry = tk.Entry(master=self, bg=configs.entry_background_colour,
                                       fg=configs.emph_text_colour,
@@ -27,7 +27,8 @@ class SearchView(tk.Frame):
         self._search_entry.grid(row=0, column=1)
         self._search_button = tk.Button(master=self, text='Search', width=25, bg=configs.button_colour,
                                         font=(configs.std_font, configs.std_font_size),
-                                        command=lambda: self.event_generate('<<Search>>'))
+                                        command=lambda: self.event_generate('<<Search>>'),
+                                        cursor="hand2")
         self._search_button.grid(row=0, column=2)
         self._advanced_fields = tk.Frame(master=self)
         label_kwargs = {
