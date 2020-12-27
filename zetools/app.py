@@ -12,18 +12,28 @@ class App:
         self._window = tk.Tk()
         self._window.configure(background=configs.background_colour)
         self._window.title("Zetools")
-        # self._window.geometry("800x500")
-        self._window.iconbitmap(configs.ico_filepath)
+        self._window.iconbitmap('{path}/{name}'.format(
+            path=configs.assets_filepath,
+            name="brain_icon.ico"
+        ))
         # Build the components;
-        self._main_logo = zetools.ImageLabel(master=self._window, image_path=configs.brain_image_path, img_width=300,
-                                             bg=zetools.configs.background_colour)
+        self._top_menu = zetools.TopMenu(master=self._window)
+        self._window.config(menu=self._top_menu)
+        self._brain_ids = zetools.BrainIDs(master=self._window, root=self._window)
+        # self._main_logo = zetools.ImageLabel(master=self._window, image_path='{path}/{name}'.format(
+        #     path=configs.assets_filepath,
+        #     name="brain.png"
+        # ), img_width=300,
+        #                                      bg=zetools.configs.background_colour)
         self._search_view = search.SearchView(master=self._window)
         self._search_controller = search.SearchController(search_view=self._search_view)
         # Assemble the UI;
         self._window.grid_columnconfigure(0, weight=1)
-        self._main_logo.grid(row=0, column=0)
+        # self._main_logo.grid(row=0, column=0)
+        self._brain_ids.grid(row=0, column=0, pady=15)
         self._search_view.grid(row=1, column=0, padx=50)
 
     def run(self):
         """Start the main application loop."""
+        self._brain_ids.start()
         self._window.mainloop()

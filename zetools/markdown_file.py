@@ -1,6 +1,8 @@
+import os
 from typing import List
 
 from . import configs
+
 
 class MarkdownFile:
     """Represents and manipulates a markdown file."""
@@ -8,6 +10,34 @@ class MarkdownFile:
     def __init__(self, content_lines: List[str], filepath: str):
         self.filepath = filepath
         self.content_lines = content_lines
+
+    @property
+    def path(self) -> str:
+        return os.path.split(self.filepath)[0]
+
+    @path.setter
+    def path(self, path: str) -> None:
+        self.filepath = r'{path}\{filename_with_ext}'.format(
+            path=path,
+            filename_with_ext=self.filename_with_ext
+        )
+
+    @property
+    def filename_with_ext(self) -> str:
+        return os.path.basename(self.filepath)
+
+    @property
+    def filename_without_ext(self) -> str:
+        return self.filename_with_ext.split('.')[0]
+
+    @filename_without_ext.setter
+    def filename_without_ext(self, filename_without_ext: str) -> None:
+        ext = os.path.splitext(self.filepath)[1]
+        self.filepath = r'{path}\{new_name}{ext}'.format(
+            path=self.path,
+            new_name=filename_without_ext,
+            ext=ext
+        )
 
     @property
     def title(self) -> str:

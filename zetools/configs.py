@@ -1,8 +1,7 @@
 vault_filepath = r'C:\Users\james.izzard\Dropbox\zettelkasten\files'
+template_filepath = r'C:\Users\james.izzard\Dropbox\zettelkasten\templates'
+assets_filepath = r'zetools\assets'
 main_page_filepath = r'C:\Users\james.izzard\Dropbox\zettelkasten\zettelkasten.md'
-ico_filepath = r'zetools/assets/brain_icon.ico'
-brain_image_path = r'zetools/assets/brain.png'
-expand_button_image_path = r'zetools/assets/expand_button.png'
 result_title_max_chars = 55
 
 background_colour = "#111111"

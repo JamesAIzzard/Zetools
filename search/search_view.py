@@ -17,8 +17,7 @@ class SearchView(tk.Frame):
         self._advanced_fields_visible = False
         self._toggle_advanced_button = tk.Button(master=self, text='...', bg=configs.button_colour,
                                                  font=(configs.std_font, 10),
-                                                 command=self._toggle_advanced_fields,
-                                                 cursor="hand1")
+                                                 command=self._toggle_advanced_fields)
         self._toggle_advanced_button.grid(row=0, column=0)
         self._search_entry = tk.Entry(master=self, bg=configs.entry_background_colour,
                                       fg=configs.emph_text_colour,
@@ -62,7 +61,14 @@ class SearchView(tk.Frame):
             entry_kwargs=entry_kwargs
         )
         self._excludes_in_title_entry.pack()
-        self._results_view = search.SearchResultsView(master=self, width=700, height=700)
+        # self._show_results_button = images.ImageButton(master=self, image_path=configs.expand_button_image_path,
+        #                                                img_width=20, bg=configs.button_colour)
+        # self._show_results_button.grid(row=3, column=0, columnspan=3, pady=15)
+        self._results_view = search.SearchResultsView(master=self, width=700, height=300)
+        # self._results_view = zetools.ScrollFrame(master=self)
+        # for i in range(30):
+        #     lbl = tk.Label(master=self._results_view.scrollable_frame, text="I am number {}".format(i), width=50)
+        #     lbl.pack()
         self._results_view.grid(row=3, column=0, columnspan=3, pady=20)
 
     def _place_advanced_fields(self) -> None:
