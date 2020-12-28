@@ -22,13 +22,16 @@ class App:
         self._brain_ids = zetools.BrainIDs(master=self._window)
         self._search_view = search.SearchView(master=self._window)
         self._search_controller = search.SearchController(search_view=self._search_view)
+        self._status_footer = zetools.StatusFooterBar(master=self._window)
         # Assemble the UI;
         self._window.grid_columnconfigure(0, weight=1)
         # self._main_logo.grid(row=0, column=0)
         self._brain_ids.grid(row=0, column=0, pady=15)
         self._search_view.grid(row=1, column=0, padx=50)
+        self._status_footer.grid(row=2, column=0, sticky="nesw")
 
     def run(self):
         """Start the main application loop."""
         self._brain_ids.start()
+        self._status_footer.start()
         self._window.mainloop()

@@ -1,8 +1,10 @@
+import os
 import subprocess
 import threading
+from pathlib import Path
 from typing import Optional, TYPE_CHECKING
 
-from zetools import markdown_file
+from zetools import markdown_file, configs
 
 if TYPE_CHECKING:
     from zetools.markdown_file import MarkdownFile
@@ -35,3 +37,16 @@ def open_md(md_file: Optional['MarkdownFile'] = None, filepath: Optional[str] = 
     t = threading.Thread(target=run)
     t.daemon = True
     t.start()
+
+
+def count_notes() -> int:
+    """Returns the number of notes inside the vault."""
+    file_count = sum(len(files) for _, _, files in os.walk(configs.vault_filepath))
+    return file_count
+
+
+def get_vault_size() -> int:
+    """Returns the size of the vault on disk in mb."""
+    root_directory = Path(configs.vault_filepath)
+    return sum(f.stat().st_size for f in root_directory.glob('**/*') if f.is_file())//(1024**2)
+
