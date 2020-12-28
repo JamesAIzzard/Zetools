@@ -12,7 +12,7 @@ class TopMenu(tk.Menu):
         super().__init__(**kwargs)
         self._templates = templates.get_template_markdown_files()
         self._templates_menu = tk.Menu(master=self, tearoff=False)
-        self.add_cascade(label="New", menu=self._templates_menu)
+        self.add_cascade(label="Create New", menu=self._templates_menu)
         self._journal_menu = tk.Menu(master=self)
 
         # This is a weird function that makes sure the correct template name is passed in.

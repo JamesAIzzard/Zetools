@@ -11,7 +11,7 @@ class SearchController:
         self._view = search_view
         self._view.bind('<<Search>>', self._on_search)
 
-    def _on_search(self, event) -> None:
+    def _on_search(self, _) -> None:  # _ is the event object
         """Handler for search event."""
         results = search.search(self._view.get())
         results_page = repository.read_md(configs.main_page_filepath)

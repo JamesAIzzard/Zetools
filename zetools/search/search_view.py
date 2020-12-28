@@ -13,6 +13,7 @@ class SearchView(tk.Frame):
     """Search input widget."""
 
     def __init__(self, master):
+        self._master = master
         super().__init__(master=master, bg=configs.background_colour)
         self._advanced_fields_visible = False
         self._toggle_advanced_button = tk.Button(master=self, text='...', bg=configs.button_colour,
@@ -29,6 +30,7 @@ class SearchView(tk.Frame):
                                         font=(configs.std_font, configs.std_font_size),
                                         command=lambda: self.event_generate('<<Search>>'),
                                         cursor="hand2")
+        self._master.bind("<Return>", lambda _: self.event_generate('<<Search>>'))
         self._search_button.grid(row=0, column=2)
         self._advanced_fields = tk.Frame(master=self)
         label_kwargs = {
