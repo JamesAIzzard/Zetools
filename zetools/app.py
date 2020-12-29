@@ -28,7 +28,7 @@ class App:
         # self._main_logo.grid(row=0, column=0)
         self._brain_ids.grid(row=0, column=0, pady=15)
         self._search_view.grid(row=1, column=0, padx=50)
-        self._status_footer.grid(row=2, column=0, sticky="nesw")
+        self._status_footer.grid(row=2, column=0, sticky="nesw", padx=10, pady=10)
 
     def run(self):
         """Start the main application loop."""
