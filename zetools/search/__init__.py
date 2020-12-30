@@ -4,4 +4,4 @@ from .search_controller import SearchController
 from .search_def import SearchDef
 from .search_view import SearchView
 from .search_result import SearchResult
-from .search_results_view import SearchResultsView
+from .results_view import ResultsView

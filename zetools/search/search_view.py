@@ -65,7 +65,7 @@ class SearchView(tk.Frame):
             entry_kwargs=entry_kwargs
         )
         self._excludes_in_title_entry.pack()
-        self._results_view = search.SearchResultsView(master=self, width=700, height=700)
+        self._results_view = search.ResultsView(master=self, width=700, height=700)
         self._results_view.grid(row=3, column=0, columnspan=3, pady=20)
 
     def _place_advanced_fields(self) -> None:

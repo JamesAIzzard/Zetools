@@ -1,8 +1,9 @@
-vault_filepath = r'C:\Users\james.izzard\Dropbox\zettelkasten\files'
-template_filepath = r'C:\Users\james.izzard\Dropbox\zettelkasten\templates'
+vault_filepath = r'C:\Users\james.izzard\Dropbox\zetools\testing\test_vault\files'
+template_filepath = r'C:\Users\james.izzard\Dropbox\zetools\testing\test_vault\templates'
 assets_filepath = r'zetools\assets'
 main_page_filepath = r'C:\Users\james.izzard\Dropbox\zettelkasten\zettelkasten.md'
 result_title_max_chars = 55
+results_scroll_view_height = 700
 
 background_colour = "#111111"
 entry_background_colour = "#222222"
