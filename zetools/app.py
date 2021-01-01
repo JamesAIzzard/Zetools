@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from zetools import configs, top_menu, brain_widget
+from zetools import configs, top_menu, brain_widget, search_widget, results_widget
 
 
 class App:
@@ -11,18 +11,19 @@ class App:
         self._window = tk.Tk()
         self._window.configure(background=configs.background_colour)
         self._window.title("Zetools")
+        self._window.geometry("{}x{}".format(configs.window_width, configs.window_height))
         self._window.iconbitmap('{path}/{name}'.format(
             path=configs.assets_filepath,
-            name="brain_icon.ico"
+            name="favicon.ico"
         ))
-
-        self._event_register = {}
 
         # Init the components & controllers;
         self._top_menu_view = top_menu.View(root=self._window)
         self._top_menu_controller = top_menu.Controller(root=self._window, view=self._top_menu_view)
         self._brain_widget_view = brain_widget.View(master=self._window)
         self._brain_widget_controller = brain_widget.Controller(view=self._brain_widget_view)
+        self._search_widget_view = search_widget.View(master=self._window)
+        self._results_widget_view = results_widget.View(master=self._window, pady=20, padx=20)
         # self._note_search_bar = zetools.NoteSearchBar(root=self._window)
         # self._note_search_bar_controller = zetools.NoteSearchBarController(view=self._note_search_bar)
         # self._backlog_search_bar = zetools.BacklogSearchBar(root=self._window)
@@ -39,6 +40,8 @@ class App:
         self._window.config(menu=self._top_menu_view)
         self._window.grid_columnconfigure(0, weight=1)
         self._brain_widget_view.grid(row=0, column=0, pady=15)
+        self._search_widget_view.grid(row=1, column=0)
+        self._results_widget_view.grid(row=2, column=0, sticky="EW")
         # if self._note_search_bar_controller.note_search_enabled:
         #     self._note_search_bar.grid(row=1, column=0, padx=50)
         # elif self._backlog_search_bar_controller.backlog_search_enabled:
