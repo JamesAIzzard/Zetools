@@ -12,7 +12,7 @@ class AdvSearchField(tk.Frame):
         self._field = tk.Entry(master=self, bg=configs.entry_background_colour,
                                fg=configs.emph_text_colour,
                                font=(configs.std_font, configs.std_font_size),
-                               width=40, highlightthickness=1, relief=tk.SUNKEN,
+                               width=45, highlightthickness=1, relief=tk.SUNKEN,
                                highlightbackground=configs.entry_background_colour,
                                highlightcolor=configs.emph_text_colour)
         self._label = tk.Label(master=self, bg=configs.background_colour,
@@ -52,7 +52,7 @@ class View(tk.Frame):
         ), img_width=30, bg=zetools.configs.background_colour, cursor="hand2")
         self._txt_search = tk.Entry(master=self, bg=configs.entry_background_colour,
                                     fg=configs.emph_text_colour,
-                                    width=45, highlightthickness=1,
+                                    width=50, highlightthickness=1,
                                     relief=tk.SUNKEN, highlightbackground=configs.entry_background_colour,
                                     highlightcolor=configs.emph_text_colour,
                                     font=(configs.std_font, configs.std_font_size))
@@ -72,7 +72,7 @@ class View(tk.Frame):
         """Adds the standard search components to the UI."""
         self._btn_backlog.grid(row=0, column=0)
         self._btn_advanced_search.grid(row=0, column=1, padx=3)
-        self._txt_search.configure(width=45)
+        self._txt_search.configure(width=50)
         self._txt_search.grid(row=0, column=2, columnspan=2, padx=3)
         self._btn_search.grid(row=0, column=4)
 
@@ -92,7 +92,7 @@ class View(tk.Frame):
         if self._backlog_view_enabled:
             self._btn_backlog.grid(row=0, column=0, padx=3)
             self._lbl_project_prefix.grid(row=0, column=1, columnspan=2)
-            self._txt_search.configure(width=40)
+            self._txt_search.configure(width=45)
             self._txt_search.grid(row=0, column=3, padx=3)
             self._btn_search.grid(row=0, column=4)
         else:
