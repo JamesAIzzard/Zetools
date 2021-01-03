@@ -52,7 +52,7 @@ class View(tk.Frame):
             name="expand_button.png"
         ), img_width=30, bg=zetools.configs.background_colour, cursor="hand2")
         self._btn_advanced_search.bind("<Button-1>", self._on_toggle_adv_fields)
-        self._lbl_project_prefix = tk.Label(master=self, text=" #project- ", bg=configs.background_colour,
+        self._lbl_project_prefix = tk.Label(master=self, text=" #incomplete, #project- ", bg=configs.background_colour,
                                             fg=configs.std_text_colour, relief=tk.SUNKEN,
                                             font=(configs.std_font, configs.std_font_size))
         self._txt_in_title = AdvSearchField(self, label_text="in title:")
@@ -107,10 +107,19 @@ class View(tk.Frame):
 
     def _build_std_search(self) -> None:
         """Adds the standard search components to the UI."""
-        self._btn_backlog.grid(row=0, column=0)
+        self._btn_backlog.grid(row=0, column=0, padx=3)
         self._btn_advanced_search.grid(row=0, column=1, padx=3)
         self._txt_search.configure(width=50)
         self._txt_search.grid(row=0, column=2, columnspan=2, padx=3)
+        self._btn_search.grid(row=0, column=4)
+
+    def _build_backlog_search(self) -> None:
+        """Builds the backlog search."""
+        self._btn_backlog.grid(row=0, column=0, padx=3)
+        self._btn_advanced_search.grid(row=0, column=1, padx=3)
+        self._lbl_project_prefix.grid(row=0, column=2)
+        self._txt_search.configure(width=31)
+        self._txt_search.grid(row=0, column=3, padx=(5, 3))
         self._btn_search.grid(row=0, column=4)
 
     def _build_adv_search(self) -> None:
@@ -138,17 +147,11 @@ class View(tk.Frame):
     def _build(self) -> None:
         """Assembles the views."""
         if self._backlog_view_enabled:
-            self._btn_backlog.grid(row=0, column=0, padx=3)
-            self._lbl_project_prefix.grid(row=0, column=1, columnspan=2)
-            self._txt_search.configure(width=45)
-            self._txt_search.grid(row=0, column=3, padx=3)
-            self._btn_search.grid(row=0, column=4)
+            self._build_backlog_search()
         else:
-            if self._advanced_search_enabled:
-                self._build_std_search()
-                self._build_adv_search()
-            else:
-                self._build_std_search()
+            self._build_std_search()
+        if self._advanced_search_enabled:
+            self._build_adv_search()
 
 
 class Controller:
