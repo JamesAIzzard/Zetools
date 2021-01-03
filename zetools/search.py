@@ -16,6 +16,7 @@ class SearchDef(TypedDict):
     ex_all: List[str]
     ex_title: List[str]
     case_match: bool
+    backlog_mode: bool
 
 
 def _get_rg(search_term: str, prev_result_paths: List[str]) -> 'Ripgrepy':
@@ -51,6 +52,20 @@ def search(search_def: 'SearchDef') -> List['MarkdownFile']:
     """Returns a list of MarkdownFiles which match the search defined in the search criteria dictionary."""
     result_paths = []
 
+    # Catch empty general search;
+    if len(search_def['inc_all']) == 0 and len(search_def['inc_title']) == 0:
+        return []
+
+    # Catch backlog search without project name;
+    if len(search_def['inc_all']) == 0 and search_def['backlog_mode'] is True:
+        return []
+
+    # Make adjustments if backlog mode enabled;
+    if search_def['backlog_mode']:
+        search_def['inc_all'][0] = '#project-{}'.format(search_def['inc_all'][0])
+        if '#incomplete' not in search_def['inc_all']:
+            search_def['inc_all'].append('#incomplete')
+
     # Filter on any 'includes-anywhere';
     # Merge any inc-title terms into the overall list;
     search_def['inc_all'] = list(set(search_def['inc_all'] + search_def['inc_title']))
@@ -70,7 +85,7 @@ def search(search_def: 'SearchDef') -> List['MarkdownFile']:
     for filepath in result_paths:
         files.append(repository.read_md(filepath))
 
-    # Now filter files based on include and exclude;
+    # Now filter files based on title include and exclude;
     matches = []  # final matches
     for file in files:
         title_words = file.title.lower().split()
@@ -81,4 +96,4 @@ def search(search_def: 'SearchDef') -> List['MarkdownFile']:
             continue
         matches.append(file)
 
-    return files
+    return matches

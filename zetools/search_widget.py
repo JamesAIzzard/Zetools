@@ -87,7 +87,8 @@ class View(tk.Frame):
             inc_title=self._prep_search_string(self._txt_in_title.get()),
             ex_all=self._prep_search_string(self._txt_nowhere.get()),
             ex_title=self._prep_search_string(self._txt_not_in_title.get()),
-            case_match=False
+            case_match=False,
+            backlog_mode=self._backlog_view_enabled
         )
 
     def _on_toggle_backlog_view(self, _) -> None:

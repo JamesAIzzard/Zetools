@@ -25,10 +25,14 @@ class SearchResultWidget(tk.Frame):
         self._hide_icon.bind("<Button-1>", lambda _: self.event_generate("<<Hide-Result-Clicked>>"))
         self._hide_icon.grid(row=0, column=0)
         # Result title;
+        if search_result.has_next_tag:
+            title_colour = configs.emph_text_colour
+        else:
+            title_colour = configs.std_text_colour
         self._lbl_title = tk.Label(master=self, text=self.truncate_text(self.search_result.title),
                                    bg=configs.background_colour,
                                    font=(configs.std_font, configs.small_font_size),
-                                   fg=configs.std_text_colour, cursor="hand2")
+                                   fg=title_colour, cursor="hand2")
         self._lbl_title.bind("<Button-1>", lambda _: self.event_generate("<<Result-Title-Clicked>>"))
         self._lbl_title.grid(row=0, column=1, sticky="W", padx=10)
         # Result filename;
@@ -243,6 +247,7 @@ class Controller:
         self._current_page_num = 0
         self._hidden_result_filenames = []
         self._update_results_nav()
+        self._view.results_summary.set_summary(0, 0.00)
         self._view.show_results([])
 
     def _on_page_results_up(self, _) -> None:

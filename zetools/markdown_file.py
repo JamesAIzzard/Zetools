@@ -54,6 +54,11 @@ class MarkdownFile:
         """Returns the filepath of the markdown file, relative to the the vault."""
         return self.filepath.replace(configs.vault_filepath + '\\', '')
 
+    @property
+    def has_next_tag(self) -> bool:
+        """Returns True/False to indicate if note has a #next tag."""
+        return '#next' in self.content.lower()
+
     def set_section(self, level: int, section_title: str, content: str) -> None:
         """Sets the content of a section in the file."""
         hash_delimiter = '#' * (level + 1)
