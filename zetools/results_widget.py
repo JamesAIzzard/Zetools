@@ -12,8 +12,32 @@ class SearchResultWidget(tk.Frame):
     """View component for a search result."""
 
     def __init__(self, master, search_result: 'MarkdownFile', **kwargs):
-        super().__init__(master=master, **kwargs)
-        self.search_result = search_result
+        super().__init__(master=master, bg=configs.background_colour, **kwargs)
+        self.grid_columnconfigure(1, weight=1)
+        self._search_result = search_result
+        self._hide_icon = zetools.ImageLabel(master=self, image_path='{path}/{name}'.format(
+            path=configs.assets_filepath,
+            name="toggle_visibility.png"
+        ), img_width=15, bg=zetools.configs.background_colour, cursor="hand2")
+        self._hide_icon.grid(row=0, column=0)
+        self._lbl_title = tk.Label(master=self, text=self.truncate_text(self._search_result.title),
+                                   bg=configs.background_colour,
+                                   font=(configs.std_font, configs.small_font_size),
+                                   fg=configs.std_text_colour, cursor="hand2")
+        self._lbl_title.bind("<<Button-1>>", self.event_generate("<<Result-Title-Click>>"))
+        self._lbl_title.grid(row=0, column=1, sticky="W", padx=10)
+        self._lbl_filename = tk.Label(master=self, text=self._search_result.filename_with_ext,
+                                      bg=configs.background_colour,
+                                      fg=configs.emph_text_colour, font=(configs.std_font, configs.small_font_size),
+                                      cursor="hand2")
+        self._lbl_filename.bind("<<Button-1>>", self.event_generate("<<Result-Filename-Clicked>>"))
+        self._lbl_filename.grid(row=0, column=2)
+
+    @staticmethod
+    def truncate_text(text: str) -> str:
+        """Trucates titles beyond a set length."""
+        return (text[:configs.result_title_max_chars] + '...') if len(
+            text) > configs.result_title_max_chars else text
 
 
 class ResultsNavWidget(tk.Frame):
@@ -36,6 +60,9 @@ class ResultsNavWidget(tk.Frame):
         self._nav_to_end = zetools.ImageLabel(master=self, image_path='{}/{}'.format(
             configs.assets_filepath, "nav_to_end.png"), img_width=20, bg=configs.background_colour, cursor="hand2")
         self._nav_to_end.grid(row=0, column=4)
+
+    def set_nav_status(self, total_pages: int, current_page: int) -> None:
+        self._nav_status.configure(text="pg {} of {}".format(current_page, total_pages))
 
 
 class ResultsSummaryWidget(tk.Label):
@@ -66,7 +93,7 @@ class ResultsFilterWidget(tk.Frame):
         self.hidden_result_filepaths: List['str'] = []
         self._template = '{num_hidden} results hidden'
         self._btn_clear = zetools.ImageLabel(master=self, image_path='{}/{}'.format(
-            configs.assets_filepath, "clear_filter.png"), img_width=25, bg=configs.background_colour, cursor="hand2")
+            configs.assets_filepath, "clear_filter.png"), img_width=20, bg=configs.background_colour, cursor="hand2")
         self._btn_clear.grid(row=0, column=0)
         self._lbl_hidden_count = tk.Label(master=self, bg=configs.background_colour,
                                           font=(configs.std_font, configs.small_font_size),
@@ -82,11 +109,12 @@ class ResultsFilterWidget(tk.Frame):
 
 
 class View(tk.Frame):
-    """Results view widget."""
+    """Results search_view widget."""
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs, bg=configs.background_colour)
         self._current_results_page: int = 1
+        self._results: List['MarkdownFile'] = []
         self._results_pages: List[tk.Frame] = []
         # Main layout components;
         self.grid_columnconfigure(0, weight=1)
@@ -99,21 +127,25 @@ class View(tk.Frame):
         self._results_summary.grid(row=0, column=1, padx=20)
         self._results_filter = ResultsFilterWidget(master=self._header)
         self._results_filter.grid(row=0, column=2, padx=20)
-        self._header.grid(row=0, column=0, sticky="EW")
+        self._header.grid(row=0, column=0)
         # Results pages;
         self._results_page_container = tk.Frame(master=self, bg=configs.background_colour)
-        self._results_page_container.grid(row=1, column=0)
+        self._results_page_container.grid_columnconfigure(0, weight=1)
+        self._results_page_container.grid(row=1, column=0, pady=(20, 0), padx=5, sticky="EW")
 
     def load_new_results(self, results: List['MarkdownFile']) -> None:
-        """Publishes a list of results to the view."""
+        """Publishes a list of results to the search_view."""
         self._clear_results()
         paged_results = self._chunk_results_list(results)
         for group in paged_results:
-            page = tk.Frame(master=self._results_page_container)
-            for result in group:
+            page = tk.Frame(master=self._results_page_container, bg=configs.background_colour)
+            page.grid_columnconfigure(0, weight=1)
+            for n, result in enumerate(group, start=0):
                 r = SearchResultWidget(master=page, search_result=result)
-                r.pack()
-        self._results_pages[self._current_results_page - 1].pack()
+                r.grid(row=n, column=0, sticky="EW")
+            self._results_pages.append(page)
+        self._results_pages[self._current_results_page - 1].grid(row=0, column=0, sticky="EW")
+        self._results_nav.set_nav_status(len(paged_results), self._current_results_page)
 
     def _increment_page(self) -> None:
         if self._current_results_page < len(self._results_pages):

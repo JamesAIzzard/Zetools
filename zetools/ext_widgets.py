@@ -4,6 +4,31 @@ from typing import Optional
 from PIL import ImageTk, Image
 
 
+class ScrollFrame(tk.Frame):
+    def __init__(self, master, width: int, height: int, **kwargs):
+        super().__init__(master, **kwargs)
+        canvas = tk.Canvas(self, width=width, height=height)
+        if 'bg' in kwargs:
+            canvas.configure(bg=kwargs['bg'])
+        canvas.configure(relief=tk.FLAT)
+        scrollbar = tk.Scrollbar(self, orient="vertical", command=canvas.yview)
+        self.scrollable_frame = tk.Frame(canvas)
+
+        self.scrollable_frame.bind(
+            "<Configure>",
+            lambda e: canvas.configure(
+                scrollregion=canvas.bbox("all")
+            )
+        )
+
+        canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+
+        canvas.configure(yscrollcommand=scrollbar.set)
+
+        canvas.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
+
+
 class SizeableImage(ImageTk.PhotoImage):
     def __init__(self, image_path: str, img_width: Optional[int] = None, img_height: Optional[int] = None):
         _raw_image = Image.open(image_path)
@@ -22,13 +47,6 @@ class SizeableImage(ImageTk.PhotoImage):
 
 
 class ImageLabel(tk.Label):
-    def __init__(self, master, image_path: str, img_width: Optional[int] = None, img_height: Optional[int] = None,
-                 **kwargs):
-        self._image = SizeableImage(image_path=image_path, img_width=img_width, img_height=img_height)
-        super().__init__(master, image=self._image, **kwargs)
-
-
-class ImageButton(tk.Button):
     def __init__(self, master, image_path: str, img_width: Optional[int] = None, img_height: Optional[int] = None,
                  **kwargs):
         self._image = SizeableImage(image_path=image_path, img_width=img_width, img_height=img_height)

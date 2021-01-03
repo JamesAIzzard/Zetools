@@ -2,12 +2,12 @@ vault_filepath = r'C:\Users\james.izzard\Dropbox\zetools\testing\test_vault\file
 template_filepath = r'C:\Users\james.izzard\Dropbox\zetools\testing\test_vault\templates'
 assets_filepath = r'zetools\assets'
 main_page_filepath = r'C:\Users\james.izzard\Dropbox\zettelkasten\zettelkasten.md'
-result_title_max_chars = 55
+result_title_max_chars = 70
 results_window_height = 500
 num_result_context_lines = 2
 num_results_per_page = 10
 window_width = 700
-window_height = 1000
+window_height = 750
 
 background_colour = "#3b3838"
 entry_background_colour = "#262626"

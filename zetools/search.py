@@ -1,4 +1,4 @@
-from typing import List, TYPE_CHECKING
+from typing import List, TypedDict, TYPE_CHECKING
 
 from ripgrepy import Ripgrepy
 
@@ -6,8 +6,16 @@ import zetools
 from zetools import repository
 
 if TYPE_CHECKING:
-    from zetools.markdown_file import MarkdownFile
-    from zetools.search import SearchDef
+    from zetools import MarkdownFile
+
+
+class SearchDef(TypedDict):
+    """Container for search definition data."""
+    inc_all: List[str]
+    inc_title: List[str]
+    ex_all: List[str]
+    ex_title: List[str]
+    case_match: bool
 
 
 def _get_rg(search_term: str, prev_result_paths: List[str]) -> 'Ripgrepy':

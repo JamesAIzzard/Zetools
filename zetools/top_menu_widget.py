@@ -3,7 +3,7 @@ from typing import Optional, TYPE_CHECKING
 
 import pyperclip
 
-# Perhaps the view shouldn't be fetching the templates like this, but its OK for now.
+# Perhaps the search_view shouldn't be fetching the templates like this, but its OK for now.
 from zetools import templates, configs, repository
 
 if TYPE_CHECKING:

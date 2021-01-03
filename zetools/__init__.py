@@ -1,8 +1,5 @@
 from . import configs, zettelkasten, repository
-from .images import ImageLabel, ImageButton
-from .labelled_entry import LabelledEntry
-from .scroll_frame import ScrollFrame
-from . import top_menu, brain_widget
-from .status_footer_bar import StatusFooterBar
+from . import top_menu_widget, zetool_widget, results_widget, search_widget, app_footer_bar
+from .ext_widgets import ImageLabel, ScrollFrame
 from .app import App
 from .markdown_file import MarkdownFile

@@ -3,7 +3,7 @@ import tkinter as tk
 from zetools import configs, repository
 
 
-class StatusFooterBar(tk.Label):
+class View(tk.Label):
     def __init__(self, **kwargs):
         super().__init__(**kwargs, relief=tk.FLAT,
                          bg=configs.background_colour,

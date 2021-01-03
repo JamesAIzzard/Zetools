@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from zetools import configs, top_menu, brain_widget, search_widget, results_widget
+from zetools import configs, top_menu_widget, zetool_widget, search_widget, results_widget, app_footer_bar
 
 
 class App:
@@ -11,46 +11,40 @@ class App:
         self._window = tk.Tk()
         self._window.configure(background=configs.background_colour)
         self._window.title("Zetools")
-        self._window.geometry("{}x{}".format(configs.window_width, configs.window_height))
+        self._window.minsize(configs.window_width, configs.window_height)
         self._window.iconbitmap('{path}/{name}'.format(
             path=configs.assets_filepath,
             name="favicon.ico"
         ))
 
         # Init the components & controllers;
-        self._top_menu_view = top_menu.View(root=self._window)
-        self._top_menu_controller = top_menu.Controller(root=self._window, view=self._top_menu_view)
-        self._brain_widget_view = brain_widget.View(master=self._window)
-        self._brain_widget_controller = brain_widget.Controller(view=self._brain_widget_view)
+        self._top_menu_view = top_menu_widget.View(root=self._window)
+        self._top_menu_controller = top_menu_widget.Controller(root=self._window, view=self._top_menu_view)
+        self._brain_widget_view = zetool_widget.View(master=self._window)
+        self._brain_widget_controller = zetool_widget.Controller(view=self._brain_widget_view)
+        self._results_widget_view = results_widget.View(master=self._window, pady=20, padx=5)
+        self._results_widget_controller = results_widget.Controller(view=self._results_widget_view)
         self._search_widget_view = search_widget.View(master=self._window)
-        self._results_widget_view = results_widget.View(master=self._window, pady=20, padx=20)
-        # self._note_search_bar = zetools.NoteSearchBar(root=self._window)
-        # self._note_search_bar_controller = zetools.NoteSearchBarController(view=self._note_search_bar)
-        # self._backlog_search_bar = zetools.BacklogSearchBar(root=self._window)
-        # self._backlog_search_controller = zetools.BacklogSearchController(view=self._backlog_search_bar)
-        # self._results_pane = zetools.ResultsPane(root=self._window)
-        # self._results_pane_controller = zetools.ResultsPaneController(view=self._results_pane)
-        # self._status_footer_bar = zetools.StatusFooterBar(root=self._window)
-        # self._status_footer_bar_controller = zetools.StatusFooterBarController(view=self._status_footer_bar)
+        self._search_widget_controller = search_widget.Controller(search_view=self._search_widget_view,
+                                                                  results_view=self._results_widget_view)
+        self._status_footer_bar = app_footer_bar.View(master=self._window)
+        # Bind global enter to search;
+        self._window.bind("<Return>", lambda _: self._window.event_generate("<<Search-Started>>"))
         # Grid them into the window;
         self._grid_views()
 
     def _grid_views(self):
-        """Handles gridding of view components as per application state."""
+        """Handles gridding of search_view components as per application state."""
         self._window.config(menu=self._top_menu_view)
         self._window.grid_columnconfigure(0, weight=1)
         self._brain_widget_view.grid(row=0, column=0, pady=15)
         self._search_widget_view.grid(row=1, column=0)
-        self._results_widget_view.grid(row=2, column=0, sticky="EW")
-        # if self._note_search_bar_controller.note_search_enabled:
-        #     self._note_search_bar.grid(row=1, column=0, padx=50)
-        # elif self._backlog_search_bar_controller.backlog_search_enabled:
-        #     self._backlog_search_bar.grid(row=1, column=0, padx=50)
-        # self._results_pane.grid(row=2, column=0, pady=20)
-        # self._status_footer.grid(row=3, column=0, sticky="nesw", padx=10, pady=10)
+        self._window.grid_rowconfigure(2, weight=1)
+        self._results_widget_view.grid(row=2, column=0, sticky="NSEW")
+        self._status_footer_bar.grid(row=3, column=0, sticky="nesw", padx=10, pady=10)
 
     def run(self):
         """Start the main application loop."""
         self._brain_widget_view.start()
-        # self._status_footer.start()
+        self._status_footer_bar.start()
         self._window.mainloop()
