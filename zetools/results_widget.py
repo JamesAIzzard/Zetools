@@ -1,5 +1,5 @@
 import tkinter as tk
-from typing import List, TYPE_CHECKING
+from typing import List, Optional, TYPE_CHECKING
 
 import zetools
 from zetools import configs
@@ -47,18 +47,22 @@ class ResultsNavWidget(tk.Frame):
         super().__init__(master=master, bg=configs.background_colour, **kwargs)
         self._nav_to_start = zetools.ImageLabel(master=self, image_path='{}/{}'.format(
             configs.assets_filepath, "nav_to_start.png"), img_width=20, bg=configs.background_colour, cursor="hand2")
+        self._nav_to_start.bind("<Button-1>", lambda _: self.event_generate("<<Results-Page-First>>"))
         self._nav_to_start.grid(row=0, column=0)
         self._nav_forwards = zetools.ImageLabel(master=self, image_path='{}/{}'.format(
             configs.assets_filepath, "nav_forwards.png"), img_width=15, bg=configs.background_colour, cursor="hand2")
+        self._nav_forwards.bind("<Button-1>", lambda _: self.event_generate("<<Results-Page-Down>>"))
         self._nav_forwards.grid(row=0, column=1)
         self._nav_status = tk.Label(master=self, text="pg 0 of 0", bg=configs.background_colour,
                                     font=(configs.std_font, configs.small_font_size), fg=configs.std_text_colour)
         self._nav_status.grid(row=0, column=2)
         self._nav_backwards = zetools.ImageLabel(master=self, image_path='{}/{}'.format(
             configs.assets_filepath, "nav_backwards.png"), img_width=15, bg=configs.background_colour, cursor="hand2")
+        self._nav_backwards.bind("<Button-1>", lambda _: self.event_generate("<<Results-Page-Up>>"))
         self._nav_backwards.grid(row=0, column=3)
         self._nav_to_end = zetools.ImageLabel(master=self, image_path='{}/{}'.format(
             configs.assets_filepath, "nav_to_end.png"), img_width=20, bg=configs.background_colour, cursor="hand2")
+        self._nav_to_end.bind("<Button-1>", lambda _: self.event_generate("<<Results-Page-Last>>"))
         self._nav_to_end.grid(row=0, column=4)
 
     def set_nav_status(self, total_pages: int, current_page: int) -> None:
@@ -113,29 +117,41 @@ class View(tk.Frame):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs, bg=configs.background_colour)
-        self._current_results_page: int = 1
+        self._current_page_num: int = 1
         self._results: List['MarkdownFile'] = []
         self._results_pages: List[tk.Frame] = []
+        self._current_page: Optional[tk.Frame] = None
         # Main layout components;
         self.grid_columnconfigure(0, weight=1)
         # Results header bar;
         self._header = tk.Frame(master=self, bg=configs.background_colour)
-        # self._header.columnconfigure(1, weight=1)
         self._results_nav = ResultsNavWidget(master=self._header)
-        self._results_nav.grid(row=0, column=0, padx=20)
+        self._results_nav.grid(row=0, column=0, padx=(20, 0))
         self._results_summary = ResultsSummaryWidget(master=self._header)
-        self._results_summary.grid(row=0, column=1, padx=20)
+        self._results_summary.grid(row=0, column=1, padx=(20, 0))
         self._results_filter = ResultsFilterWidget(master=self._header)
-        self._results_filter.grid(row=0, column=2, padx=20)
+        self._results_filter.grid(row=0, column=2, padx=(20, 0))
+        self._clear_results = zetools.ImageLabel(master=self._header, image_path='{}/{}'.format(
+            configs.assets_filepath, "bin.png"), img_width=20, bg=configs.background_colour, cursor="hand2")
+        self._clear_results.bind("<Button-1>>", lambda _: self.event_generate("<<Reset-Search>>"))
+        self._clear_results.grid(row=0, column=3, padx=(20, 0))
         self._header.grid(row=0, column=0)
         # Results pages;
         self._results_page_container = tk.Frame(master=self, bg=configs.background_colour)
         self._results_page_container.grid_columnconfigure(0, weight=1)
         self._results_page_container.grid(row=1, column=0, pady=(20, 0), padx=5, sticky="EW")
+        # Bind to internal events;
+        self.bind_all("<<Results-Page-Up>>", self._on_increment_page)
+        self.bind_all("<<Results-Page-Down>>", self._on_decrement_page)
+        self.bind_all("<<Results-Page-First>>", self._on_goto_first_page)
+        self.bind_all("<<Results-Page-Last>>", self._on_goto_last_page)
 
     def load_new_results(self, results: List['MarkdownFile']) -> None:
         """Publishes a list of results to the search_view."""
-        self._clear_results()
+        self._empty_page_container()
+        self._results = results
+        self._results_pages = []
+        # Chunk results into pages;
         paged_results = self._chunk_results_list(results)
         for group in paged_results:
             page = tk.Frame(master=self._results_page_container, bg=configs.background_colour)
@@ -144,21 +160,42 @@ class View(tk.Frame):
                 r = SearchResultWidget(master=page, search_result=result)
                 r.grid(row=n, column=0, sticky="EW")
             self._results_pages.append(page)
-        self._results_pages[self._current_results_page - 1].grid(row=0, column=0, sticky="EW")
-        self._results_nav.set_nav_status(len(paged_results), self._current_results_page)
+        self._current_page = self._results_pages[self._current_page_num - 1]
+        self._show_current_page()
+        self._results_nav.set_nav_status(len(paged_results), self._current_page_num)
 
-    def _increment_page(self) -> None:
-        if self._current_results_page < len(self._results_pages):
-            self._current_results_page = self._current_results_page + 1
+    def _show_current_page(self) -> None:
+        """Grids the current page into the view;"""
+        self._empty_page_container()
+        self._current_page.grid(row=0, column=0, sticky="EW")
+        self._results_nav.set_nav_status(len(self._results_pages), self._current_page_num)
 
-    def _decrement_page(self) -> None:
-        if self._current_results_page > 2:
-            self._current_results_page = self._current_results_page - 1
-
-    def _clear_results(self):
-        self._current_results_page = 1
+    def _empty_page_container(self) -> None:
+        """Empties the result page container;"""
         for result in self._results_page_container.winfo_children():
-            result.pack_forget()
+            result.grid_forget()
+
+    def _on_goto_first_page(self, _) -> None:
+        self._current_page_num = 1
+        self._current_page = self._results_pages[0]
+        self._show_current_page()
+
+    def _on_goto_last_page(self, _) -> None:
+        self._current_page_num = len(self._results_pages)
+        self._current_page = self._results_pages[len(self._results_pages) - 1]
+        self._show_current_page()
+
+    def _on_increment_page(self, _) -> None:
+        if self._current_page_num < len(self._results_pages):
+            self._current_page_num = self._current_page_num + 1
+            self._current_page = self._results_pages[self._current_page_num - 1]
+        self._show_current_page()
+
+    def _on_decrement_page(self, _) -> None:
+        if self._current_page_num > 1:
+            self._current_page_num = self._current_page_num - 1
+            self._current_page = self._results_pages[self._current_page_num - 1]
+        self._show_current_page()
 
     @staticmethod
     def _chunk_results_list(results_list: List['MarkdownFile']) -> List[List['MarkdownFile']]:
@@ -173,3 +210,7 @@ class Controller:
     def __init__(self, view: 'View'):
         self._view = view
         self._hidden_results: List['MarkdownFile'] = []
+        self._view.bind_all("<<Reset-Search>>", self._on_reset_search)
+
+    def _on_reset_search(self) -> None:
+        self._view.
