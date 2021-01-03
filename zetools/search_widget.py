@@ -30,6 +30,10 @@ class AdvSearchField(tk.Frame):
         """Returns the content of the entry textbox."""
         return self._field.get()
 
+    def clear(self) -> None:
+        """Clears the content of the textbox."""
+        self._field.delete(0, 'end')
+
 
 class View(tk.Frame):
     """General search widget."""
@@ -58,14 +62,14 @@ class View(tk.Frame):
             path=configs.assets_filepath,
             name="search.png"
         ), img_width=25, bg=zetools.configs.background_colour, cursor="hand2")
-        self._btn_search.bind("<Button-1>", lambda _: self.event_generate("<<Search-Started>>"))
+        self._btn_search.bind("<Button-1>", lambda _: self.event_generate("<<Search>>"))
         self._txt_search = tk.Entry(master=self, bg=configs.entry_background_colour,
                                     fg=configs.emph_text_colour,
                                     width=50, highlightthickness=1,
                                     relief=tk.SUNKEN, highlightbackground=configs.entry_background_colour,
                                     highlightcolor=configs.emph_text_colour,
                                     font=(configs.std_font, configs.std_font_size))
-        self._grid_views()
+        self._build()
 
     @staticmethod
     def _prep_search_string(search_string: str) -> List[str]:
@@ -89,16 +93,16 @@ class View(tk.Frame):
     def _on_toggle_backlog_view(self, _) -> None:
         """Responds to toggle backlog search_view button press."""
         self._backlog_view_enabled = not self._backlog_view_enabled
-        self._clear_views()
-        self._grid_views()
+        self._clear()
+        self._build()
 
     def _on_toggle_adv_fields(self, _) -> None:
         """Responds to toggle advanced fields button press."""
         self._advanced_search_enabled = not self._advanced_search_enabled
-        self._clear_views()
-        self._grid_views()
+        self._clear()
+        self._build()
 
-    def _grid_std_search(self) -> None:
+    def _build_std_search(self) -> None:
         """Adds the standard search components to the UI."""
         self._btn_backlog.grid(row=0, column=0)
         self._btn_advanced_search.grid(row=0, column=1, padx=3)
@@ -106,18 +110,25 @@ class View(tk.Frame):
         self._txt_search.grid(row=0, column=2, columnspan=2, padx=3)
         self._btn_search.grid(row=0, column=4)
 
-    def _grid_adv_search_fields(self) -> None:
+    def _build_adv_search(self) -> None:
         """Adds the advanced fields to the UI."""
         self._txt_in_title.grid(row=1, column=0, columnspan=4, padx=1)
         self._txt_not_in_title.grid(row=2, column=0, columnspan=4, padx=1)
         self._txt_nowhere.grid(row=3, column=0, columnspan=4, padx=1)
 
-    def _clear_views(self) -> None:
+    def reset_search(self) -> None:
+        """Clears the text from all the search fields."""
+        self._txt_search.delete(0, 'end')
+        self._txt_in_title.clear()
+        self._txt_not_in_title.clear()
+        self._txt_nowhere.clear()
+
+    def _clear(self) -> None:
         """Clears all child widgets."""
         for result in self.winfo_children():
             result.grid_forget()
 
-    def _grid_views(self) -> None:
+    def _build(self) -> None:
         """Assembles the views."""
         if self._backlog_view_enabled:
             self._btn_backlog.grid(row=0, column=0, padx=3)
@@ -127,20 +138,24 @@ class View(tk.Frame):
             self._btn_search.grid(row=0, column=4)
         else:
             if self._advanced_search_enabled:
-                self._grid_std_search()
-                self._grid_adv_search_fields()
+                self._build_std_search()
+                self._build_adv_search()
             else:
-                self._grid_std_search()
+                self._build_std_search()
 
 
 class Controller:
-    def __init__(self, search_view: 'View', results_view: 'results_widget.View'):
+    def __init__(self, search_view: 'View', results_widget_controller: 'results_widget.Controller'):
         self._view = search_view
-        self._results_view = results_view
-        self._view.bind_all("<<Search-Started>>", self._on_search_started)
+        self._results_widget_controller = results_widget_controller
+        self._view.bind_all("<<Search>>", self._on_search)
+        self._view.bind_all("<<Clear-Search>>", self._on_clear_search, add='+')
 
-    def _on_search_started(self, _) -> None:
-        print(self._view.get())
+    def _on_search(self, _) -> None:
+        """Handler for search event."""
         results = search.search(self._view.get())
-        self._results_view.load_new_results(results)
-        print(results)
+        self._results_widget_controller.load_results(results)
+
+    def _on_clear_search(self, _) -> None:
+        """Handles the <<Reset-Search>> event."""
+        self._view.reset_search()

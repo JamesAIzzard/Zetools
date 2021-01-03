@@ -25,11 +25,13 @@ class App:
         self._results_widget_view = results_widget.View(master=self._window, pady=20, padx=5)
         self._results_widget_controller = results_widget.Controller(view=self._results_widget_view)
         self._search_widget_view = search_widget.View(master=self._window)
-        self._search_widget_controller = search_widget.Controller(search_view=self._search_widget_view,
-                                                                  results_view=self._results_widget_view)
+        self._search_widget_controller = search_widget.Controller(
+            search_view=self._search_widget_view,
+            results_widget_controller=self._results_widget_controller
+        )
         self._status_footer_bar = app_footer_bar.View(master=self._window)
         # Bind global enter to search;
-        self._window.bind("<Return>", lambda _: self._window.event_generate("<<Search-Started>>"))
+        self._window.bind("<Return>", lambda _: self._window.event_generate("<<Search>>"))
         # Grid them into the window;
         self._grid_views()
 
