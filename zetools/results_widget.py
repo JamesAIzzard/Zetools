@@ -92,7 +92,7 @@ class ResultsSummaryWidget(tk.Label):
                          fg=configs.std_text_colour,
                          bg=configs.background_colour,
                          **kwargs)
-        self._template = '{num_results} results ({search_time:.2f}s)'
+        self._template = '{num_results} results ({search_time:.4f}s)'
         self.set_summary(0, 0.00)
 
     def set_summary(self, num_results: int, search_time: float) -> None:
@@ -234,8 +234,10 @@ class Controller:
         self._all_results = results
         self._current_page_num = 1
         self._view.results_nav.set_nav_status(self._num_pages, self._current_page_num)
-        self._view.results_summary.set_summary(self._num_results, 0.05)
         self._view.show_results(self._current_page_results)
+
+    def set_summary(self, num_results: int, search_time: float) -> None:
+        self._view.results_summary.set_summary(num_results, search_time)
 
     def _update_results_nav(self) -> None:
         """Updates the figures in the results nav bar."""

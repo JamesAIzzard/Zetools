@@ -31,7 +31,6 @@ def _get_rg(search_term: str, prev_result_paths: List[str]) -> 'Ripgrepy':
 def _filter_on_includes_anywhere(search_term: str, prev_result_paths: List[str]) -> List[str]:
     """Returns a list of filepaths, representing each file which includes the search_term."""
     rg = _get_rg(search_term, prev_result_paths)
-    print(search_term)
     raw_result = rg.i().g('*.md').json().run().as_dict  # noqa
     results = []
     for match in raw_result:

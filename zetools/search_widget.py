@@ -1,4 +1,5 @@
 import tkinter as tk
+from timeit import default_timer
 from typing import List, TYPE_CHECKING
 
 import zetools
@@ -163,8 +164,11 @@ class Controller:
 
     def _on_search(self, _) -> None:
         """Handler for search event."""
+        start = default_timer()
         results = search.search(self._view.get())
+        end = default_timer()
         self._results_widget_controller.load_results(results)
+        self._results_widget_controller.set_summary(len(results), end-start)
 
     def _on_clear_search(self, _) -> None:
         """Handles the <<Reset-Search>> event."""
