@@ -74,7 +74,7 @@ class View(tk.Frame):
 
     @staticmethod
     def _prep_search_string(search_string: str) -> List[str]:
-        raw_list = search_string.split(',')
+        raw_list = search_string.lower().split(',')
         output = []
         for term in raw_list:
             stripped_term = term.strip()
