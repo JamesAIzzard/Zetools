@@ -31,6 +31,7 @@ def _get_rg(search_term: str, prev_result_paths: List[str]) -> 'Ripgrepy':
 def _filter_on_includes_anywhere(search_term: str, prev_result_paths: List[str]) -> List[str]:
     """Returns a list of filepaths, representing each file which includes the search_term."""
     rg = _get_rg(search_term, prev_result_paths)
+    print(search_term)
     raw_result = rg.i().g('*.md').json().run().as_dict  # noqa
     results = []
     for match in raw_result:
@@ -95,5 +96,11 @@ def search(search_def: 'SearchDef') -> List['MarkdownFile']:
                 not any(x in search_def['inc_title'] for x in title_words):
             continue
         matches.append(file)
+
+    # Sort the results;
+    matches.sort(key=lambda x: (
+        x.has_next_tag,  # First sort by next tag;
+        x.get_match_ratio(search_def['inc_all'])  # Search by keyword frequency ratio;
+    ), reverse=True)
 
     return matches

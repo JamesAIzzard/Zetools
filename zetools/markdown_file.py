@@ -1,4 +1,5 @@
 import os
+from collections import Counter
 from typing import List
 
 from . import configs
@@ -50,6 +51,11 @@ class MarkdownFile:
         return ''.join(self.content_lines)
 
     @property
+    def total_words(self) -> int:
+        """Returns the total number of words in the file."""
+        return len(self.content.split())
+
+    @property
     def rel_filepath(self) -> str:
         """Returns the filepath of the markdown file, relative to the the vault."""
         return self.filepath.replace(configs.vault_filepath + '\\', '')
@@ -58,6 +64,17 @@ class MarkdownFile:
     def has_next_tag(self) -> bool:
         """Returns True/False to indicate if note has a #next tag."""
         return '#next' in self.content.lower()
+
+    def get_match_ratio(self, keywords: List[str]) -> float:
+        """Returns the ratio of keywords to total words."""
+        remove_chars = str.maketrans(dict.fromkeys('[]'))
+        content = self.content.translate(remove_chars)
+
+        word_freq = Counter(content.lower().split())
+        keyword_total = 0
+        for keyword in keywords:
+            keyword_total = keyword_total + word_freq[keyword.lower()]
+        return keyword_total / self.total_words
 
     def set_section(self, level: int, section_title: str, content: str) -> None:
         """Sets the content of a section in the file."""

@@ -94,12 +94,14 @@ class View(tk.Frame):
     def _on_toggle_backlog_view(self, _) -> None:
         """Responds to toggle backlog search_view button press."""
         self._backlog_view_enabled = not self._backlog_view_enabled
+        self.reset_search()
         self._clear()
         self._build()
 
     def _on_toggle_adv_fields(self, _) -> None:
         """Responds to toggle advanced fields button press."""
         self._advanced_search_enabled = not self._advanced_search_enabled
+        self.reset_adv_fields()
         self._clear()
         self._build()
 
@@ -120,6 +122,10 @@ class View(tk.Frame):
     def reset_search(self) -> None:
         """Clears the text from all the search fields."""
         self._txt_search.delete(0, 'end')
+        self.reset_adv_fields()
+
+    def reset_adv_fields(self) -> None:
+        """Clears the test in the advanced search fields."""
         self._txt_in_title.clear()
         self._txt_not_in_title.clear()
         self._txt_nowhere.clear()
