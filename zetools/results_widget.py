@@ -159,9 +159,15 @@ class View(tk.Frame):
     def show_results(self, results: List['MarkdownFile']) -> None:
         """Publishes the list of results to the view."""
         self.clear_results()
-        for n, result in enumerate(results, start=0):
-            r = SearchResultWidget(master=self._results_container, search_result=result)
-            r.grid(row=n, column=0, sticky="EW")
+        if len(results):
+            for n, result in enumerate(results, start=0):
+                r = SearchResultWidget(master=self._results_container, search_result=result)
+                r.grid(row=n, column=0, sticky="EW")
+        else:
+            lbl_no_results = tk.Label(master=self._results_container, text="No Results", bg=configs.background_colour,
+                                      font=(configs.std_font, configs.small_font_size),
+                                      fg=configs.std_text_colour)
+            lbl_no_results.grid(row=0, column=0, sticky="EW")
 
     def show_search_spinner(self) -> None:
         """Starts the results spinner."""
@@ -241,7 +247,10 @@ class Controller:
     def load_results(self, results: List['MarkdownFile']) -> None:
         """Presents a fresh set of results."""
         self._all_results = results
-        self._current_page_num = 1
+        if len(results):
+            self._current_page_num = 1
+        else:
+            self._current_page_num = 0
         self._view.results_nav.set_nav_status(self._num_pages, self._current_page_num)
         self._view.show_results(self._current_page_results)
 

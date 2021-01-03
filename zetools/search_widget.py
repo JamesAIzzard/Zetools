@@ -24,7 +24,7 @@ class AdvSearchField(tk.Frame):
                                fg=configs.std_text_colour, width=10,
                                font=(configs.std_font, configs.std_font_size),
                                anchor=tk.E, text=label_text)
-        self._label.grid(row=0, column=0, padx=7)
+        self._label.grid(row=0, column=0, padx=10)
         self._field.grid(row=0, column=1)
 
     def get(self) -> str:
@@ -118,7 +118,7 @@ class View(tk.Frame):
         """Builds the backlog search."""
         self._btn_backlog.grid(row=0, column=0, padx=3)
         self._btn_advanced_search.grid(row=0, column=1, padx=3)
-        self._lbl_project_prefix.grid(row=0, column=2)
+        self._lbl_project_prefix.grid(row=0, column=2, padx=(2, 0))
         self._txt_search.configure(width=31)
         self._txt_search.grid(row=0, column=3, padx=(5, 3))
         self._btn_search.grid(row=0, column=4)
