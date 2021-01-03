@@ -164,6 +164,7 @@ class Controller:
 
     def _on_search(self, _) -> None:
         """Handler for search event."""
+        self._results_widget_controller.show_search_spinner()
         start = default_timer()
         results = search.search(self._view.get())
         end = default_timer()

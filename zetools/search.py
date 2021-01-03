@@ -1,5 +1,4 @@
 from typing import List, TypedDict, TYPE_CHECKING
-
 from ripgrepy import Ripgrepy
 
 import zetools

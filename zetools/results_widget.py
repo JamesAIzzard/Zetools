@@ -163,6 +163,15 @@ class View(tk.Frame):
             r = SearchResultWidget(master=self._results_container, search_result=result)
             r.grid(row=n, column=0, sticky="EW")
 
+    def show_search_spinner(self) -> None:
+        """Starts the results spinner."""
+        self.clear_results()
+        lbl_spinner = tk.Label(master=self._results_container, text="Loading...", bg=configs.background_colour,
+                               font=(configs.std_font, configs.small_font_size),
+                               fg=configs.std_text_colour)
+        lbl_spinner.grid(row=0, column=0, sticky="EW")
+        self.update()
+
 
 class Controller:
     def __init__(self, view: 'View'):
@@ -238,6 +247,9 @@ class Controller:
 
     def set_summary(self, num_results: int, search_time: float) -> None:
         self._view.results_summary.set_summary(num_results, search_time)
+
+    def show_search_spinner(self) -> None:
+        self._view.show_search_spinner()
 
     def _update_results_nav(self) -> None:
         """Updates the figures in the results nav bar."""
