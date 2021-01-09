@@ -45,6 +45,12 @@ class App:
         self._results_widget_view.grid(row=2, column=0, sticky="NSEW")
         self._status_footer_bar.grid(row=3, column=0, sticky="nesw", padx=10, pady=10)
 
+    def _start_silo_checking(self) -> None:
+        """Starts the silo checking process."""
+        # Start silo checking as an asyncio?
+            # Update progress somehow?
+        # When finished, pause for x time, then restart?
+
     def run(self):
         """Start the main application loop."""
         self._brain_widget_view.start()
