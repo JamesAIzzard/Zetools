@@ -42,7 +42,7 @@ class MarkdownFile:
 
     @property
     def title(self) -> str:
-        """Gets the section_title of the markdown file."""
+        """Gets the title of the markdown file."""
         return self.content_lines[0][1:].strip()
 
     @property
